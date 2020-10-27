@@ -14,6 +14,8 @@ namespace API.Extensions
     {
       services.AddScoped<ITokenService, TokenService>();
 
+      services.AddScoped<IOrderService, OrderService>();
+
       services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
       services.AddScoped<IBasketRepository, BasketRepository>();
