@@ -23,5 +23,16 @@ namespace Core.Interfaces
     count the number of items with specifications to apply the filters
      */
     Task<int> CountAsync(ISpecification<T> spec);
+
+    /* 
+    the following methods happen in memory
+    to keep track of the changes
+    UoW implement the changes to db
+     */
+    void Add(T entity);
+
+    void Update(T entity);
+
+    void Delete(T entity);
   }
 }
