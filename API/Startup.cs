@@ -1,3 +1,4 @@
+using System.IO;
 using API.Extensions;
 using API.Helpers;
 using API.Middlewares;
@@ -9,6 +10,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using StackExchange.Redis;
 
 namespace API
@@ -70,7 +72,17 @@ namespace API
 
       app.UseHttpsRedirection();
 
+      // serves the compiled Angular view layer
       app.UseStaticFiles();
+
+      // serves the static images
+      app.UseStaticFiles(new StaticFileOptions
+      {
+        FileProvider = new PhysicalFileProvider(
+          Path.Combine(Directory.GetCurrentDirectory(), "Content")
+        ),
+        RequestPath = "/content"
+      });
 
       app.UseRouting();
 
@@ -85,6 +97,9 @@ namespace API
       app.UseEndpoints(endpoints =>
       {
         endpoints.MapControllers();
+
+        // endpoint for the compiled Angular view layer
+        endpoints.MapFallbackToController("Index", "Fallback");
       });
     }
   }

@@ -1,0 +1,5 @@
+add dates to the orders to display on the orders page
+add admins to create types and approvals and to publish items
+create a chat using signalR -- and comments at the bottom of each prodeuct
+create rating system
+keep track of inventory

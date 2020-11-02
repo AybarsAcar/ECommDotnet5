@@ -12,8 +12,10 @@ namespace Infrastructure.Services
   {
     private readonly IBasketRepository _basketRepo;
     private readonly IUnitOfWork _unit;
-    public OrderService(IBasketRepository basketRepo, IUnitOfWork unit)
+    private readonly IPaymentService _paymentService;
+    public OrderService(IBasketRepository basketRepo, IUnitOfWork unit, IPaymentService paymentService)
     {
+      this._paymentService = paymentService;
       this._unit = unit;
       this._basketRepo = basketRepo;
     }
@@ -40,17 +42,26 @@ namespace Infrastructure.Services
       // calculate the subtotal
       var subTotal = items.Sum(item => item.Price * item.Quantity);
 
+      // check to see if order exists with the same payment intent id
+      var spec = new OrderByPaymentIntentIdSpecification(basket.PaymentIntentId);
+      var existingOrder = await _unit.Repository<Order>().GetEntityWithSpec(spec);
+
+      if (existingOrder != null)
+      {
+        // delete the order
+        _unit.Repository<Order>().Delete(existingOrder);
+        // and create another id just to make sure the order is accurete
+        await _paymentService.CreateOrUpdatePaymentIntent(basket.PaymentIntentId);
+      }
+
       // create the order and add it
-      var order = new Order(items, buyerEmail, shippingAddress, deliveryMethod, subTotal);
+      var order = new Order(items, buyerEmail, shippingAddress, deliveryMethod, subTotal, basket.PaymentIntentId);
       _unit.Repository<Order>().Add(order);
 
       // save it to the db -- if this fails all the changes will roll back
       var result = await _unit.Complete();
 
       if (result <= 0) return null;
-
-      // delete basket
-      await _basketRepo.DeleteBasketAsync(basketId);
 
       // return the order
       return order;
