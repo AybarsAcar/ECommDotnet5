@@ -31,12 +31,12 @@ namespace API
 
       services.AddDbContext<StoreContext>(opt =>
       {
-        opt.UseSqlite(_config.GetConnectionString("DefaultConnection"));
+        opt.UseNpgsql(_config.GetConnectionString("DefaultConnection"));
       });
 
       services.AddDbContext<AppIdentityDbContext>(opt =>
       {
-        opt.UseSqlite(_config.GetConnectionString("IdentityConnection"));
+        opt.UseNpgsql(_config.GetConnectionString("IdentityConnection"));
       });
 
       services.AddSingleton<IConnectionMultiplexer>(opt =>

@@ -45,7 +45,7 @@ namespace API.Controllers
 
     /* 
     helper method for the client
-    so they can do async validation on the client side
+    for async validation on the client side
      */
     [HttpGet("emailexists")]
     public async Task<ActionResult<bool>> CheckEmailExistsAsync([FromQuery] string email)
