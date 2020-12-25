@@ -4,3 +4,4 @@ appsettings.json
 *.db
 # redis snapshot
 *.rdb
+.DS_Store
